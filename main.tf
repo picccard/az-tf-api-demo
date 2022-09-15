@@ -38,17 +38,38 @@ resource "azurerm_service_plan" "plan_euw_1" {
   sku_name            = "B1"
 }
 
-# App Service
-resource "azurerm_app_service" "this" {
+# App Service 1
+resource "azurerm_windows_web_app" "win1" {
   name                = "app-service-euw-win1-eula"
-  location            = azurerm_resource_group.rg_euw_tftest.location
   resource_group_name = azurerm_resource_group.rg_euw_tftest.name
-  app_service_plan_id = azurerm_service_plan.plan_euw_1.id
+  location            = azurerm_resource_group.rg_euw_tftest.location
+  service_plan_id     = azurerm_service_plan.plan_euw_1.id
+
+  site_config {}
+}
+
+# App Slot 1
+resource "azurerm_windows_web_app_slot" "win1_blue" {
+  name           = "blue"
+  app_service_id = azurerm_windows_web_app.win1.id
 
   site_config {
-    # Run "az webapp list-runtimes" for current supported values, but always
-    # output the value of process.version from a running app because you might
-    # not get the version you expect
-    windows_fx_version = "node|16-lts"
+    application_stack {
+      current_stack = "node"
+      node_version  = "16-LTS"
+    }
+  }
+}
+
+# App Slot 2
+resource "azurerm_windows_web_app_slot" "win1_green" {
+  name           = "green"
+  app_service_id = azurerm_windows_web_app.win1.id
+
+  site_config {
+    application_stack {
+      current_stack = "node"
+      node_version  = "16-LTS"
+    }
   }
 }
