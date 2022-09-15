@@ -33,7 +33,7 @@ resource "azurerm_resource_group" "rg_euw_tftest" {
 resource "azurerm_app_service_plan" "plan_euw_1" {
   name                = "plan-euw-win1"
   location            = azurerm_resource_group.rg_euw_tftest.location
-  resource_group_name = azurerm_resource_group.rg_euw_tftest.name
+  resource_group_name = 
   kind                = "Windows"
 
   sku {
@@ -42,12 +42,21 @@ resource "azurerm_app_service_plan" "plan_euw_1" {
   }
 }
 
+# App Service Plan
+resource "azurerm_service_plan" "plan_euw_1" {
+  name                = "example"
+  resource_group_name = azurerm_resource_group.rg_euw_tftest.name
+  location            = azurerm_resource_group.rg_euw_tftest.location
+  os_type             = "Windows"
+  sku_name            = "B1"
+}
+
 # App Service
 resource "azurerm_app_service" "this" {
   name                = "app-service-euw-win1-eula"
   location            = azurerm_resource_group.rg_euw_tftest.location
   resource_group_name = azurerm_resource_group.rg_euw_tftest.name
-  app_service_plan_id = azurerm_app_service_plan.plan_euw_1.id
+  app_service_plan_id = azurerm_service_plan.plan_euw_1.id
 
   site_config {
     # Run "az webapp list-runtimes" for current supported values, but always
@@ -56,6 +65,9 @@ resource "azurerm_app_service" "this" {
     windows_fx_version = "node|16-lts"
   }
 }
+
+
+
 
 # Application Insights
 resource "azurerm_application_insights" "this" {
