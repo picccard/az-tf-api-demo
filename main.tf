@@ -52,11 +52,3 @@ resource "azurerm_app_service" "this" {
     windows_fx_version = "node|16-lts"
   }
 }
-
-# Application Insights
-resource "azurerm_application_insights" "this" {
-  name                = "appi-euw-win1-eula"
-  location            = azurerm_resource_group.rg_euw_tftest.location
-  resource_group_name = azurerm_resource_group.rg_euw_tftest.name
-  application_type    = "web"
-}
