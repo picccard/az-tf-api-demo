@@ -1,7 +1,18 @@
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "=3.0.0"
+    }
+  }
+}
+
+
+# Configure the Microsoft Azure Provider
 provider "azurerm" {
-  version = "=3.0.0"
   features {}
 }
+
 
 terraform {
   backend "azurerm" {
@@ -11,6 +22,7 @@ terraform {
     key                  = "terraform.tfstate"
   }
 }
+
 
 resource "azurerm_resource_group" "rg-euw-tftest" {
   name     = "rg-euw-tftest"
