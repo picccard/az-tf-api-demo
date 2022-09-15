@@ -30,19 +30,6 @@ resource "azurerm_resource_group" "rg_euw_tftest" {
 }
 
 # App Service Plan
-resource "azurerm_app_service_plan" "plan_euw_1" {
-  name                = "plan-euw-win1"
-  location            = azurerm_resource_group.rg_euw_tftest.location
-  resource_group_name = 
-  kind                = "Windows"
-
-  sku {
-    tier = "Standard"
-    size = "S1"
-  }
-}
-
-# App Service Plan
 resource "azurerm_service_plan" "plan_euw_1" {
   name                = "example"
   resource_group_name = azurerm_resource_group.rg_euw_tftest.name
@@ -65,9 +52,6 @@ resource "azurerm_app_service" "this" {
     windows_fx_version = "node|16-lts"
   }
 }
-
-
-
 
 # Application Insights
 resource "azurerm_application_insights" "this" {
