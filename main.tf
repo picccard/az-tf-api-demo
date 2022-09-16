@@ -31,45 +31,29 @@ resource "azurerm_resource_group" "rg_euw_tftest" {
 
 # App Service Plan
 resource "azurerm_service_plan" "plan_euw_1" {
-  name                = "example"
+  name                = "plan-euw-1"
   resource_group_name = azurerm_resource_group.rg_euw_tftest.name
   location            = azurerm_resource_group.rg_euw_tftest.location
-  os_type             = "Windows"
+  os_type             = "Linux"
   sku_name            = "B1"
 }
 
-# App Service 1
-resource "azurerm_windows_web_app" "win1" {
-  name                = "app-service-euw-win1-eula"
-  resource_group_name = azurerm_resource_group.rg_euw_tftest.name
+# Webapp 1
+resource "azurerm_linux_web_app" "webapp" {
+  name                = "app-service-euw-linux1-eula"
   location            = azurerm_resource_group.rg_euw_tftest.location
+  resource_group_name = azurerm_resource_group.rg_euw_tftest.name
   service_plan_id     = azurerm_service_plan.plan_euw_1.id
-
-  site_config {}
-}
-
-# App Slot 1
-resource "azurerm_windows_web_app_slot" "win1_blue" {
-  name           = "blue"
-  app_service_id = azurerm_windows_web_app.win1.id
+  https_only          = true
 
   site_config {
+    minimum_tls_version = "1.2"
     application_stack {
-      current_stack = "node"
-      node_version  = "16-LTS"
+      node_version = "14-lts"
     }
   }
-}
 
-# App Slot 2
-resource "azurerm_windows_web_app_slot" "win1_green" {
-  name           = "green"
-  app_service_id = azurerm_windows_web_app.win1.id
-
-  site_config {
-    application_stack {
-      current_stack = "node"
-      node_version  = "16-LTS"
-    }
+  app_settings = {
+    PICCCARD_RANDOM = "custom-env-var-linux1"
   }
 }
