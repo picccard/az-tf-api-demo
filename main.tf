@@ -23,13 +23,13 @@ terraform {
   }
 }
 
-# Reource Group
+# Reource Group EU 
 resource "azurerm_resource_group" "rg_euw_tftest" {
-  name     = "rg-euw-tftest"
+  name     = "rg-euw-express-api"
   location = "westeurope"
 }
 
-# App Service Plan
+# App Service Plan EU
 resource "azurerm_service_plan" "plan_euw_1" {
   name                = "plan-euw-1"
   resource_group_name = azurerm_resource_group.rg_euw_tftest.name
@@ -38,7 +38,7 @@ resource "azurerm_service_plan" "plan_euw_1" {
   sku_name            = "B1"
 }
 
-# Webapp 1
+# Webapp EU 1
 resource "azurerm_linux_web_app" "webapp" {
   name                = "app-service-euw-linux1-eula"
   location            = azurerm_resource_group.rg_euw_tftest.location
