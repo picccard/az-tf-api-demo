@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "=3.0.0"
     }
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = ">= 2.28.1"
+    }
   }
 }
 
@@ -12,6 +16,11 @@ terraform {
 provider "azurerm" {
   features {}
 }
+
+# Service Principal prep
+provider "azuread" {}
+data "azuread_client_config" "main" {}
+data "azurerm_subscription" "main" {}
 
 # remote tfstate
 terraform {
@@ -91,4 +100,53 @@ resource "azurerm_linux_web_app" "webapp_ue2_n1" {
   app_settings = {
     PICCCARD_RANDOM = "custom-env-var-us2-linux1"
   }
+}
+
+# Service Principal main
+
+# Create Application
+resource "azuread_application" "web_app_sp" {
+  display_name = "web-app-sp"
+}
+
+# Create Service Principal linked to the Application
+resource "azuread_service_principal" "web_app_sp" {
+  application_id = azuread_application.web_app_sp.application_id
+}
+
+# Create role assignment for Webapp EU
+resource "azurerm_role_assignment" "contributor_euw_n1" {
+  scope                = azurerm_linux_web_app.webapp_euw_n1.id
+  role_definition_name = "Contributor"
+  principal_id         = azuread_service_principal.web_app_sp.id
+}
+
+# Create role assignment for Webapp US
+resource "azurerm_role_assignment" "contributor_ue2_n1" {
+  scope                = azurerm_linux_web_app.webapp_ue2_n1.id
+  role_definition_name = "Contributor"
+  principal_id         = azuread_service_principal.web_app_sp.id
+}
+
+# Create Application password (client secret)
+resource "azuread_application_password" "web_app_sp_pwd" {
+  application_object_id = azuread_application.web_app_sp.object_id
+  end_date_relative     = "4320h" # expire in 6 months
+}
+
+output "display_name" {
+  value = azuread_service_principal.web_app_sp.display_name
+}
+
+output "client_id" {
+  value = azuread_application.web_app_sp.application_id
+}
+
+output "client_secret" {
+  value     = azuread_application_password.web_app_sp_pwd.value
+  sensitive = true
+}
+
+output "tenant_id" {
+  value = data.azuread_client_config.main.tenant_id
 }
