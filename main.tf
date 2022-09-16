@@ -39,7 +39,7 @@ resource "azurerm_service_plan" "plan_euw_1" {
 }
 
 # Webapp EU 1
-resource "azurerm_linux_web_app" "webapp" {
+resource "azurerm_linux_web_app" "webapp_euw_n1" {
   name                = "app-service-euw-linux1-eula"
   location            = azurerm_resource_group.rg_euw_tftest.location
   resource_group_name = azurerm_resource_group.rg_euw_tftest.name
@@ -54,7 +54,7 @@ resource "azurerm_linux_web_app" "webapp" {
   }
 
   app_settings = {
-    PICCCARD_RANDOM = "custom-env-var-linux1"
+    PICCCARD_RANDOM = "custom-env-var-euw-linux1"
   }
 }
 
@@ -74,7 +74,7 @@ resource "azurerm_service_plan" "plan_ue2_1" {
 }
 
 # Webapp US 1
-resource "azurerm_linux_web_app" "webapp-ue2-n1" {
+resource "azurerm_linux_web_app" "webapp_ue2_n1" {
   name                = "app-service-ue2-linux1-eula"
   location            = azurerm_resource_group.rg_ue2_tftest.location
   resource_group_name = azurerm_resource_group.rg_ue2_tftest.name
