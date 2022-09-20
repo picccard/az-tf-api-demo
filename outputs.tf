@@ -1,5 +1,5 @@
 output "github_secret" {
-  value = <<GITHUBSECRET
+  value     = <<GITHUBSECRET
   {
     "clientId": "${azuread_application.web_app_sp.application_id}",
     "clientSecret": "${azuread_application_password.web_app_sp_pwd.value}",

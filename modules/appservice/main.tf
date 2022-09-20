@@ -23,13 +23,44 @@ resource "azurerm_linux_web_app" "webapp1" {
 
   site_config {
     minimum_tls_version = "1.2"
+
     application_stack {
       node_version = "14-lts"
     }
+
+    ip_restriction = [
+      {
+        ip_address                = null
+        virtual_network_subnet_id = null
+        service_tag               = "AzureFrontDoor.Backend"
+        headers                   = [
+          {
+            "x_forwarded_host" = var.frontdoor_fqdn # allow the frontdoor to forwards traffic to this webapp
+            "x_azure_fdid" = []
+            "x_fd_health_probe" = []
+            "x_forwarded_for" = []
+          }
+        ]
+        name                      = "Access_via_frontdoor"
+        description               = "Access_via_frontdoor"
+        priority                  = 169
+        action                    = "Allow"
+      },
+      {
+        ip_address                = var.my_public_ip # 12.34.56.78/32
+        virtual_network_subnet_id = null
+        service_tag               = null
+        headers                   = []
+        name                      = "Access_via_homeip"
+        description               = "Access_via_homeip"
+        priority                  = 269
+        action                    = "Allow"
+      }
+    ]
   }
 
   app_settings = {
-    PICCCARD_RANDOM = "custom-env-var-${var.region_short}-linux1"
+    PICCCARD_RANDOM = "region-${var.region}-linux1"
   }
 }
 
